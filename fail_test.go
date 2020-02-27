@@ -3,17 +3,30 @@ package fail
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 	"testing"
+	"unicode"
 )
 
+func compress(str string) string {
+	b := strings.Builder{}
+	b.Grow(len(str))
+
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+
+	return b.String()
+}
+
 func Test(t *testing.T) {
-	tests := []struct {
+	tests := map[string]struct {
 		comp fmt.Stringer
 		want string
 	}{
-		{
+		"diff": {
 			comp: Diff{
 				Func: "Test",
 				Msg:  "some message",
@@ -27,29 +40,29 @@ string(
 + 	"bar",
   )`,
 		},
-		{
+		"error": {
 			comp: Err{
 				Func: "Test",
 				Err:  errors.New("error message"),
 			},
 			want: "Test() unexpected error:\nerror message",
 		},
-		{
+		"message": {
 			comp: Msg{
 				Func: "Test",
 				Msg:  "some message",
 			},
 			want: `Test() some message`,
 		},
-		{
+		"retval": {
 			comp: RetVal{
 				Func: "Test",
-				Msg:  "some message",
+				Msg:  "diff",
 				Have: []interface{}{"foo", true},
 				Want: []interface{}{"bar", false},
 			},
 			want: `
-Test() some message
+Test() diff
 [1/2] string(
 - 	"foo",
 + 	"bar",
@@ -59,16 +72,31 @@ Test() some message
 + 	false,
   )`,
 		},
+		"retval with too few values": {
+			comp: RetVal{
+				Func: "Test",
+				Msg:  "diff, too few values",
+				Have: []interface{}{"foo", true},
+				Want: []interface{}{"bar"},
+			},
+			want: `
+Test() diff, too few values
+[1/2] string(
+- 	"foo",
++ 	"bar",
+  )
+[2/2] interface{}(
+- 	bool(true),
+  )`,
+		},
 	}
 
-	for _, tc := range tests {
-		t.Run(reflect.TypeOf(tc.comp).String(), func(t *testing.T) {
-			// ignore whitespace at start/end that might not match
-			have := strings.TrimSpace(tc.comp.String())
-			want := strings.TrimSpace(tc.want)
-
-			if have != want {
-				t.Error("have:\n", have, "\n\nwant:\n", want)
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			have := tc.comp.String()
+			// ignore any whitespace that might not match
+			if compress(have) != compress(tc.want) {
+				t.Error("have:\n", have, "\n\nwant:\n", tc.want)
 			}
 		})
 	}

@@ -71,8 +71,18 @@ func (rv RetVal) String() string {
 
 	b := strings.Builder{}
 	for i := 0; i < l; i++ {
+		var have interface{}
+		var want interface{}
+
+		if i < lh {
+			have = rv.Have[i]
+		}
+		if i < lw {
+			want = rv.Want[i]
+		}
+
 		_, _ = fmt.Fprintf(&b, "[%d/%d] ", i+1, l)
-		b.WriteString(diff(rv.Have[i], rv.Want[i], rv.Opts))
+		b.WriteString(diff(have, want, rv.Opts))
 	}
 
 	return fmt.Sprintf("%s() %s\n%s", rv.Func, rv.Msg, b.String())
