@@ -22,10 +22,10 @@ func Test(t *testing.T) {
 			},
 			want: `
 Test() some message
-{string}:
-	-: "foo"
-	+: "bar"
-`,
+string(
+- 	"foo",
++ 	"bar",
+  )`,
 		},
 		{
 			comp: Err{
@@ -50,12 +50,14 @@ Test() some message
 			},
 			want: `
 Test() some message
-[1/2] {string}:
-	-: "foo"
-	+: "bar"
-[2/2] {bool}:
-	-: true
-	+: false`,
+[1/2] string(
+- 	"foo",
++ 	"bar",
+  )
+[2/2] bool(
+- 	true,
++ 	false,
+  )`,
 		},
 	}
 
@@ -66,7 +68,7 @@ Test() some message
 			want := strings.TrimSpace(tc.want)
 
 			if have != want {
-				t.Error("\thave:\n", have, "\twant:\n", want)
+				t.Error("have:\n", have, "\n\nwant:\n", want)
 			}
 		})
 	}
