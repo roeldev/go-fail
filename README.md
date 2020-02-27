@@ -5,7 +5,6 @@ go-fail
 [![Build status][build-status-img]][build-status-url]
 [![Go Report Card][report-img]][report-url]
 [![Documentation][doc-img]][doc-url]
-![Minimal Go version][go-version-img]
 
 [latest-release-img]: https://img.shields.io/github/release/roeldev/go-fail.svg?label=latest
 [latest-release-url]: https://github.com/roeldev/go-fail/releases
