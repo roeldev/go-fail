@@ -3,7 +3,6 @@ package fail
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 	"testing"
 	"unicode"
@@ -23,11 +22,11 @@ func compress(str string) string {
 }
 
 func Test(t *testing.T) {
-	tests := []struct {
+	tests := map[string]struct {
 		comp fmt.Stringer
 		want string
 	}{
-		{
+		"diff": {
 			comp: Diff{
 				Func: "Test",
 				Msg:  "some message",
@@ -41,29 +40,29 @@ string(
 + 	"bar",
   )`,
 		},
-		{
+		"error": {
 			comp: Err{
 				Func: "Test",
 				Err:  errors.New("error message"),
 			},
 			want: "Test() unexpected error:\nerror message",
 		},
-		{
+		"message": {
 			comp: Msg{
 				Func: "Test",
 				Msg:  "some message",
 			},
 			want: `Test() some message`,
 		},
-		{
+		"retval": {
 			comp: RetVal{
 				Func: "Test",
-				Msg:  "some message",
+				Msg:  "diff",
 				Have: []interface{}{"foo", true},
 				Want: []interface{}{"bar", false},
 			},
 			want: `
-Test() some message
+Test() diff
 [1/2] string(
 - 	"foo",
 + 	"bar",
@@ -73,10 +72,27 @@ Test() some message
 + 	false,
   )`,
 		},
+		"retval with too few values": {
+			comp: RetVal{
+				Func: "Test",
+				Msg:  "diff, too few values",
+				Have: []interface{}{"foo", true},
+				Want: []interface{}{"bar"},
+			},
+			want: `
+Test() diff, too few values
+[1/2] string(
+- 	"foo",
++ 	"bar",
+  )
+[2/2] interface{}(
+- 	bool(true),
+  )`,
+		},
 	}
 
-	for _, tc := range tests {
-		t.Run(reflect.TypeOf(tc.comp).String(), func(t *testing.T) {
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
 			have := tc.comp.String()
 			// ignore any whitespace that might not match
 			if compress(have) != compress(tc.want) {
