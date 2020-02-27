@@ -16,7 +16,7 @@ go-fail
 [doc-url]: https://pkg.go.dev/github.com/roeldev/go-fail
 
 
-Fail is a Go package to easily create human-readable failure reports for different kinds of failed tests.
+Fail is a Go package designed to easily create human-readable failure reports for different kinds of failed tests. It is not a testing or assertion framework.
 
 
 ```sh
