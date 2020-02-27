@@ -25,7 +25,7 @@ Test() some message
 string(
 - 	"foo",
 + 	"bar",
-  )`,
+  ) `,
 		},
 		{
 			comp: Err{
@@ -57,7 +57,7 @@ Test() some message
 [2/2] bool(
 - 	true,
 + 	false,
-  )`,
+  ) `,
 		},
 	}
 
