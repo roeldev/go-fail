@@ -27,21 +27,34 @@ import "github.com/roeldev/go-fail"
 ```
 
 
-## Examples
+## Show differences
+Below examples creates a diff report that shows the difference between the actual and expected values.
+
 ```go
 func TestAnything(t *testing.T) {
     have := Anything()
-    want := `some value`
+    want := "expected value"
 
-    // output a diff of both variables
-    t.Error(fail.Diff{
-        Func: "Anything",
-        Msg: "this is a meaningful message",
-        Have: have,
-        Want: want,
-    })
+    if have != want {
+        t.Error(fail.Diff{
+            Func: "Anything",
+            Msg: "this is a meaningful message",
+            Have: have,
+            Want: want,
+        })
+    }
 }
 ```
+The output result is something similar like:
+```text
+Anything() this is a meaningful message
+string(
+- 	"actual value",
++ 	"expected value",
+  )
+```
+
+## Unexpected error
 ```go
 func TestDoSomething(t *testing.T) {
     if err := DoSomething(); err != nil {
@@ -52,6 +65,11 @@ func TestDoSomething(t *testing.T) {
         })
     }
 }
+```
+The output result is something similar like:
+```text
+DoSomething() unexpected error:
+some error occurred while doing important stuff...
 ```
 
 
