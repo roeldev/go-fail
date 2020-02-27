@@ -6,7 +6,21 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"unicode"
 )
+
+func compress(str string) string {
+	b := strings.Builder{}
+	b.Grow(len(str))
+
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+
+	return b.String()
+}
 
 func Test(t *testing.T) {
 	tests := []struct {
@@ -25,7 +39,7 @@ Test() some message
 string(
 - 	"foo",
 + 	"bar",
-  ) `,
+  )`,
 		},
 		{
 			comp: Err{
@@ -57,18 +71,16 @@ Test() some message
 [2/2] bool(
 - 	true,
 + 	false,
-  ) `,
+  )`,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(reflect.TypeOf(tc.comp).String(), func(t *testing.T) {
-			// ignore whitespace at start/end that might not match
-			have := strings.TrimSpace(tc.comp.String())
-			want := strings.TrimSpace(tc.want)
-
-			if have != want {
-				t.Error("have:\n", have, "\n\nwant:\n", want)
+			have := tc.comp.String()
+			// ignore any whitespace that might not match
+			if compress(have) != compress(tc.want) {
+				t.Error("have:\n", have, "\n\nwant:\n", tc.want)
 			}
 		})
 	}
