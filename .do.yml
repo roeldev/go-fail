@@ -1,0 +1,9 @@
+# This is a dofile. For usage info visit https://github.com/roeldev/do
+
+# setup project, get dependencies
+setup: go get -v -t -d ./...
+
+# run tests with coverage and race detection
+test: |
+  go test -cover -coverprofile=coverage.out -v -race
+  go tool cover -func=coverage.out
