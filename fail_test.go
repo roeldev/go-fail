@@ -47,6 +47,13 @@ string(
 			},
 			want: "Test() unexpected error:\nerror message",
 		},
+		"panic": {
+			comp: Panic{
+				Func:  "Test",
+				Panic: "panic: pkg.Func: something bad happened",
+			},
+			want: "Test() unexpected panic:\npanic: pkg.Func: something bad happened",
+		},
 		"message": {
 			comp: Msg{
 				Func: "Test",
