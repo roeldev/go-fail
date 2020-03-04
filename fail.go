@@ -35,6 +35,18 @@ func (fe Err) String() string {
 	return fmt.Sprintf("%s() unexpected error:\n%s", fe.Func, fe.Err.Error())
 }
 
+// Panic is used to create a failure report for any unexpected encountered
+// panics.
+type Panic struct {
+	Func  string
+	Panic interface{}
+}
+
+// String returns a human-readable failure report of the unexpected panic.
+func (fp Panic) String() string {
+	return fmt.Sprintf("%s() unexpected panic:\n%s", fp.Func, fp.Panic)
+}
+
 // Msg is used to create a simple failure report with only a message.
 type Msg struct {
 	Func string
@@ -61,8 +73,9 @@ type RetVal struct {
 // It uses `cmp.Diff()` to do so.
 // Options added to the Opts fields are passed to `cmp.Diff()`.
 func (rv RetVal) String() string {
-	lh, lw := len(rv.Have), len(rv.Want)
 	var l int
+
+	lh, lw := len(rv.Have), len(rv.Want)
 	if lh > lw {
 		l = lh
 	} else {
